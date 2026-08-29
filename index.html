@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>The Day That Never Happened</title>
+
+    <style>
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --background: #11110f;
+            --panel: #171713;
+            --panel-light: #202019;
+
+            --text: #d8d2bd;
+            --muted: #85806f;
+
+            --border: #444136;
+            --border-light: #77715f;
+
+            --red: #b95b4b;
+            --red-light: #c77b6d;
+
+            --green: #9aab92;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: "Courier New", Courier, monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        /* =========================
+           SCREEN EFFECT
+        ========================= */
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.055;
+            z-index: 9999;
+
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.8) 3px
+                );
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .archive {
+            width: min(1000px, 90%);
+            margin: auto;
+            padding: 45px 0;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .top-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            font-size: 12px;
+            opacity: 0.5;
+            letter-spacing: 1px;
+        }
+
+        .archive-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .archive-title h1 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(35px, 7vw, 75px);
+            font-weight: normal;
+            line-height: 1;
+        }
+
+        .status {
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status span {
+            color: var(--red);
+            margin-left: 5px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #555044;
+            margin: 25px 0;
+        }
+
+
+        /* =========================
+           INTRO
+        ========================= */
+
+        .intro {
+            min-height: 70vh;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .classified {
+            font-size: 11px;
+            letter-spacing: 2px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        .intro h2,
+        .final h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(45px, 8vw, 90px);
+            font-weight: normal;
+            line-height: 0.95;
+        }
+
+        .intro h2 span,
+        .final h2 span {
+            opacity: 0.45;
+        }
+
+        .description {
+            margin-top: 35px;
+            line-height: 1.8;
+            color: #aaa48f;
+            font-size: 15px;
+        }
+
+        .description strong {
+            color: var(--text);
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        #startButton,
+        .final button,
+        #continueButton {
+            margin-top: 35px;
+
+            background: transparent;
+
+            border: 1px solid var(--border-light);
+
+            color: var(--text);
+
+            padding: 15px 25px;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease,
+                transform 0.3s ease;
+
+            font-size: 13px;
+        }
+
+        #startButton:hover,
+        .final button:hover,
+        #continueButton:hover {
+            background: var(--text);
+            color: var(--background);
+            transform: translateY(-2px);
+        }
+
+        #startButton:focus-visible,
+        .final button:focus-visible,
+        #continueButton:focus-visible,
+        .fragment:focus-visible,
+        .close:focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 4px;
+        }
+
+
+        /* =========================
+           INSTRUCTIONS
+        ========================= */
+
+        .instruction {
+            border-left: 2px solid var(--border-light);
+            padding-left: 20px;
+            margin: 60px 0 35px;
+        }
+
+        .instruction span {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 25px;
+        }
+
+        .instruction p {
+            margin-top: 10px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           FRAGMENTS
+        ========================= */
+
+        .fragments {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .fragment {
+            min-height: 190px;
+
+            border: 1px solid var(--border);
+
+            background: var(--panel);
+
+            color: var(--text);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            transition:
+                border-color 0.3s ease,
+                transform 0.3s ease,
+                background 0.3s ease;
+
+            padding: 20px;
+        }
+
+        .fragment:hover {
+            border-color: #aaa38b;
+            transform: translateY(-4px);
+            background: var(--panel-light);
+        }
+
+        .fragment.collected {
+            border-color: #716c5a;
+            background: #202019;
+
+            box-shadow:
+                0 0 20px rgba(216, 210, 189, 0.04);
+        }
+
+        .fragment-icon {
+            font-size: 45px;
+            filter: grayscale(1);
+            margin-bottom: 20px;
+            transition: filter 0.3s ease;
+        }
+
+        .fragment:hover .fragment-icon,
+        .fragment.collected .fragment-icon {
+            filter: grayscale(0);
+        }
+
+        .fragment > span:not(.fragment-icon) {
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .fragment small {
+            opacity: 0.4;
+            margin-top: 8px;
+            font-size: 10px;
+        }
+
+
+        /* =========================
+           PROGRESS
+        ========================= */
+
+        .progress-container {
+            margin-top: 50px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            font-size: 11px;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #292820;
+            overflow: hidden;
+        }
+
+        #progress {
+            height: 100%;
+            width: 0%;
+            background: #b7ae94;
+            transition: width 0.5s ease;
+        }
+
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(5, 5, 4, 0.92);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            z-index: 500;
+
+            padding: 20px;
+        }
+
+        .modal-box {
+            width: min(600px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+
+            background: var(--panel);
+
+            border: 1px solid #555044;
+
+            padding: 45px;
+
+            position: relative;
+
+            animation: modalAppear 0.25s ease;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+
+            background: none;
+            border: none;
+
+            color: #aaa48f;
+
+            font-size: 28px;
+            line-height: 1;
+
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: white;
+        }
+
+        .modal-icon {
+            font-size: 55px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 11px;
+            letter-spacing: 2px;
+            opacity: 0.5;
+        }
+
+        .modal-box h3 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 30px;
+            font-weight: normal;
+
+            margin-top: 20px;
+
+            line-height: 1.4;
+        }
+
+
+        /* =========================
+           CLUE
+        ========================= */
+
+        .clue-box {
+            border-left: 2px solid var(--border-light);
+
+            margin-top: 30px;
+
+            padding: 15px;
+        }
+
+        .clue-box span {
+            font-size: 10px;
+            opacity: 0.5;
+        }
+
+        .clue-box p {
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           FINAL PAGE
+        ========================= */
+
+        .final {
+            min-height: 80vh;
+            padding: 80px 0;
+        }
+
+        .memory {
+            border: 1px solid #3d3a31;
+
+            margin-top: 50px;
+
+            padding: 25px;
+
+            line-height: 2;
+
+            color: #918c7b;
+        }
+
+        .memory p {
+            margin-bottom: 8px;
+        }
+
+        .memory p:last-child {
+            margin-bottom: 0;
+        }
+
+        .warning {
+            margin-top: 40px;
+
+            padding: 30px;
+
+            border: 1px solid #75483e;
+
+            text-align: center;
+        }
+
+        .warning span {
+            color: var(--red);
+            font-size: 12px;
+        }
+
+        .warning p {
+            margin-top: 15px;
+            color: #918c7b;
+        }
+
+        .warning strong {
+            display: block;
+
+            margin-top: 20px;
+
+            font-family: Georgia, "Times New Roman", serif;
+
+            font-size: 22px;
+
+            color: var(--red-light);
+
+            line-height: 1.4;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            border-top: 1px solid #39372f;
+
+            margin-top: 80px;
+
+            padding-top: 20px;
+
+            font-size: 10px;
+
+            opacity: 0.4;
+        }
+
+        footer span {
+            margin: 0 10px;
+        }
+
+
+        /* =========================
+           TABLET
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .archive {
+                width: 92%;
+            }
+
+            .archive-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .fragments {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .fragment {
+                min-height: 160px;
+            }
+
+            .modal-box {
+                padding: 35px 20px;
+            }
+
+            .intro h2,
+            .final h2 {
+                font-size: clamp(42px, 12vw, 70px);
+            }
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 450px) {
+
+            .archive {
+                width: 92%;
+            }
+
+            .top-line {
+                font-size: 9px;
+                gap: 10px;
+            }
+
+            .archive-title h1 {
+                font-size: 42px;
+            }
+
+            .fragments {
+                grid-template-columns: 1fr;
+            }
+
+            .fragment {
+                min-height: 150px;
+            }
+
+            .modal {
+                padding: 12px;
+            }
+
+            .modal-box {
+                padding: 30px 18px;
+            }
+
+            .modal-box h3 {
+                font-size: 25px;
+            }
+
+            .ticket-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            footer {
+                line-height: 2;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- SCREEN EFFECT -->
+    <div class="noise"></div>
+
+
+    <main class="archive">
+
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <header>
+
+            <div class="top-line">
+                <span>MEMORY ARCHIVE</span>
+                <span>CASE FILE: 0828</span>
+            </div>
+
+            <div class="archive-title">
+
+                <h1>ARCHIVE #0828</h1>
+
+                <div class="status">
+                    STATUS:
+                    <span>UNRECOVERED</span>
+                </div>
+
+            </div>
+
+            <div class="divider"></div>
+
+        </header>
+
+
+        <!-- =========================
+             INTRO
+        ========================== -->
+
+        <section class="intro" id="introSection">
+
+            <p class="classified">
+                [ CLASSIFIED MEMORY RECORD ]
+            </p>
+
+            <h2>
+                THE DAY THAT
+                <br>
+                <span>NEVER HAPPENED</span>
+            </h2>
+
+            <p class="description">
+                We found fragments of someone's perfect day.
+                <br>
+                The problem is...
+                <br>
+                <strong>the day doesn't exist.</strong>
+            </p>
+
+            <button id="startButton" type="button">
+                BEGIN RECONSTRUCTION →
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             ARCHIVE
+        ========================== -->
+
+        <section id="archiveSection" class="hidden">
+
+            <div class="instruction">
+
+                <span>ARCHIVE #0828</span>
+
+                <p>
+                    Six fragments recovered.
+                    <br>
+                    Click each one to reconstruct the memory.
+                </p>
+
+            </div>
+
+
+            <div class="fragments">
+
+                <button
+                    class="fragment"
+                    type="button"
+                    data-fragment="photo"
+                    aria-label="Open photograph record"
+                >
+                    <span class="fragment-icon">📸</span>
+                    <span>PHOTOGRAPH</span>
+                    <small>RECORD 01</small>
+                </button>
+
+
+                <button
+                    class="fragment"
+                    type="button"
+                    data-fragment="song"
+                    aria-label="Open audio record"
+                >
+                    <span class="fragment-icon">🎵</span>
+                    <span>AUDIO</span>
+                    <small>RECORD 02</small>
+                </button>
+
+
+                <button
+                    class="fragment"
+                    type="button"
+                    data-fragment="message"
+                    aria-label="Open message record"
+                >
+                    <span class="fragment-icon">💬</span>
+                    <span>MESSAGE</span>
+                    <small>RECORD 03</small>
+                </button>
+
+
+                <button
+                    class="fragment"
+                    type="button"
+                    data-fragment="sunset"
+                    aria-label="Open sunset record"
+                >
+                    <span class="fragment-icon">🌅</span>
+                    <span>SUNSET</span>
+                    <small>RECORD 04</small>
+                </button>
+
+
+                <button
+                    class="fragment"
+                    type="button"
+                    data-fragment="ticket"
+                    aria-label="Open ticket record"
+                >
+                    <span class="fragment-icon">🎟️</span>
+                    <span>TICKET</span>
+                    <small>RECORD 05</small>
+                </button>
+
+
+                <button
+                    class="fragment"
+                    type="button"
+                    data-fragment="note"
+                    aria-label="Open handwritten note record"
+                >
+                    <span class="fragment-icon">📝</span>
+                    <span>HANDWRITTEN NOTE</span>
+                    <small>RECORD 06</small>
+                </button>
+
+            </div>
+
+
+            <!-- PROGRESS -->
+
+            <div class="progress-container">
+
+                <div class="progress-text">
+                    <span>MEMORY RECONSTRUCTION</span>
+
+                    <span>
+                        <span id="count">0</span>/6
+                    </span>
+                </div>
+
+                <div class="progress-bar">
+                    <div id="progress"></div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             MODAL
+        ========================== -->
+
+        <div
+            id="modal"
+            class="modal hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modalTitle"
+        >
+
+            <div class="modal-box">
+
+                <button
+                    id="closeModal"
+                    class="close"
+                    type="button"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+
+                <div
+                    id="modalIcon"
+                    class="modal-icon"
+                ></div>
+
+
+                <p
+                    id="modalTitle"
+                    class="modal-title"
+                ></p>
+
+
+                <h3 id="modalText"></h3>
+
+
+                <div class="clue-box">
+
+                    <span>RECOVERED CLUE</span>
+
+                    <p id="modalClue"></p>
+
+                </div>
+
+
+                <button
+                    id="continueButton"
+                    type="button"
+                >
+                    SAVE FRAGMENT
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             FINAL
+        ========================== -->
+
+        <section
+            id="finalSection"
+            class="final hidden"
+        >
+
+            <p class="classified">
+                [ RECONSTRUCTION COMPLETE ]
+            </p>
+
+
+            <h2>
+                YOU RECONSTRUCTED
+                <br>
+                <span>THE DAY.</span>
+            </h2>
+
+
+            <div class="memory">
+
+                <p>
+                    08:14 — They woke up late.
+                </p>
+
+                <p>
+                    11:32 — They disappeared into the city.
+                </p>
+
+                <p>
+                    15:48 — Someone bought two tickets.
+                </p>
+
+                <p>
+                    18:42 — A song started playing.
+                </p>
+
+                <p>
+                    19:07 — The sun disappeared.
+                </p>
+
+                <p>
+                    23:59 — Someone wrote a note.
+                </p>
+
+            </div>
+
+
+            <div class="warning">
+
+                <span>⚠ ARCHIVE ERROR</span>
+
+                <p>
+                    You reconstructed the day.
+                </p>
+
+                <p>
+                    But there's one problem...
+                </p>
+
+                <strong>
+                    NOBODY REMEMBERS LIVING IT.
+                </strong>
+
+            </div>
+
+
+            <button
+                id="reopenButton"
+                type="button"
+            >
+                REOPEN ARCHIVE
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <footer>
+
+            ARCHIVE SYSTEM v2.08
+
+            <span>•</span>
+
+            MEMORY STATUS: UNSTABLE
+
+        </footer>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+        "use strict";
+
+        /* =========================
+           ELEMENTS
+        ========================== */
+
+        const startButton = document.getElementById("startButton");
+        const introSection = document.getElementById("introSection");
+        const archiveSection = document.getElementById("archiveSection");
+        const finalSection = document.getElementById("finalSection");
+
+        const modal = document.getElementById("modal");
+        const closeModal = document.getElementById("closeModal");
+        const continueButton = document.getElementById("continueButton");
+
+        const modalIcon = document.getElementById("modalIcon");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalText = document.getElementById("modalText");
+        const modalClue = document.getElementById("modalClue");
+
+        const count = document.getElementById("count");
+        const progress = document.getElementById("progress");
+
+        const reopenButton = document.getElementById("reopenButton");
+
+        const fragments = document.querySelectorAll(".fragment");
+
+
+        /* =========================
+           VARIABLES
+        ========================== */
+
+        const collected = new Set();
+
+        let currentFragment = null;
+
+
+        /* =========================
+           FRAGMENT DATA
+        ========================== */
+
+        const fragmentData = {
+
+            photo: {
+                icon: "📸",
+                title: "RECORD 01 — PHOTOGRAPH",
+                text: "A photograph of someone standing beneath a pale morning sky.",
+                clue: "The timestamp reads 08:14. Nobody remembers taking the photograph."
+            },
+
+            song: {
+                icon: "🎵",
+                title: "RECORD 02 — AUDIO",
+                text: "A forgotten song plays for exactly three minutes and seventeen seconds.",
+                clue: "The final lyric mentions a place that does not exist."
+            },
+
+            message: {
+                icon: "💬",
+                title: "RECORD 03 — MESSAGE",
+                text: "A conversation between two people who claim they were together that day.",
+                clue: "One message simply says: 'Don't let tomorrow find us.'"
+            },
+
+            sunset: {
+                icon: "🌅",
+                title: "RECORD 04 — SUNSET",
+                text: "A strange photograph of a sunset with no identifiable location.",
+                clue: "The sun appears to disappear at 19:07 — exactly."
+            },
+
+            ticket: {
+                icon: "🎟️",
+                title: "RECORD 05 — TICKET",
+                text: "Two tickets were purchased for a destination that cannot be found.",
+                clue: "Departure: 15:48. Passengers: UNKNOWN."
+            },
+
+            note: {
+                icon: "📝",
+                title: "RECORD 06 — HANDWRITTEN NOTE",
+                text: "A handwritten note was discovered inside an empty room.",
+                clue: "It contains only one sentence: 'If you remember this, it never happened.'"
+            }
+
+        };
+
+
+        /* =========================
+           START RECONSTRUCTION
+        ========================== */
+
+        startButton.addEventListener("click", function () {
+
+            introSection.classList.add("hidden");
+
+            archiveSection.classList.remove("hidden");
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        });
+
+
+        /* =========================
+           OPEN FRAGMENTS
+        ========================== */
+
+        fragments.forEach(function (fragment) {
+
+            fragment.addEventListener("click", function () {
+
+                const type = fragment.dataset.fragment;
+
+                const data = fragmentData[type];
+
+                if (!data) {
+                    return;
+                }
+
+                currentFragment = fragment;
+
+                modalIcon.textContent = data.icon;
+
+                modalTitle.textContent = data.title;
+
+                modalText.textContent = data.text;
+
+                modalClue.textContent = data.clue;
+
+                modal.classList.remove("hidden");
+
+                closeModal.focus();
+
+            });
+
+        });
+
+
+        /* =========================
+           CLOSE MODAL
+        ========================== */
+
+        function hideModal() {
+            modal.classList.add("hidden");
+            currentFragment = null;
+        }
+
+
+        closeModal.addEventListener("click", hideModal);
+
+
+        /* =========================
+           SAVE FRAGMENT
+        ========================== */
+
+        continueButton.addEventListener("click", function () {
+
+            if (!currentFragment) {
+                return;
+            }
+
+            const type = currentFragment.dataset.fragment;
+
+            if (!collected.has(type)) {
+
+                collected.add(type);
+
+                currentFragment.classList.add("collected");
+
+                count.textContent = collected.size;
+
+                const percentage =
+                    (collected.size / 6) * 100;
+
+                progress.style.width = percentage + "%";
+
+            }
+
+            hideModal();
+
+
+            /* All six fragments collected */
+
+            if (collected.size === 6) {
+
+                setTimeout(function () {
+
+                    archiveSection.classList.add("hidden");
+
+                    finalSection.classList.remove("hidden");
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                }, 600);
+
+            }
+
+        });
+
+
+        /* =========================
+           CLICK OUTSIDE MODAL
+        ========================== */
+
+        modal.addEventListener("click", function (event) {
+
+            if (event.target === modal) {
+                hideModal();
+            }
+
+        });
+
+
+        /* =========================
+           ESCAPE KEY
+        ========================== */
+
+        document.addEventListener("keydown", function (event) {
+
+            if (event.key === "Escape") {
+                hideModal();
+            }
+
+        });
+
+
+        /* =========================
+           REOPEN ARCHIVE
+        ========================== */
+
+        reopenButton.addEventListener("click", function () {
+
+            collected.clear();
+
+            fragments.forEach(function (fragment) {
+                fragment.classList.remove("collected");
+            });
+
+            count.textContent = "0";
+
+            progress.style.width = "0%";
+
+            finalSection.classList.add("hidden");
+
+            introSection.classList.remove("hidden");
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>
